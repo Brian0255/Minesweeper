@@ -11,4 +11,6 @@ void QRightClickButton::mousePressEvent(QMouseEvent* e)
         emit rightClicked();
     else if (e->button() == Qt::LeftButton)
         emit leftClicked();
+    else if (e->button() == Qt::MiddleButton)
+        emit middleClicked();
 }

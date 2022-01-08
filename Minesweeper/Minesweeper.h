@@ -18,14 +18,21 @@ public:
     void calcBombsAroundTile(QPushButton* button);
     void resetGame();
     void gameOver(QPushButton*);
+    void checkIfWin();
+    void disableButtons();
+    int calcFlagsAroundTile(QPushButton* button);
 public slots:
     void tileButtonPress();
     void tileButtonClick();
     void tileRightClick();
+    void tileMiddleClick();
     void resetButtonClick();
 private:
     Ui::MinesweeperClass ui;
+    int bombs;
+    int bombStartAmount{ 30 };
     std::array<std::array<Tile,16>,16> tiles;
     bool gameActive{ false };
     std::map<QPushButton*, std::array<int,2>> buttonCoords;
+    std::map<std::array<int, 2>, bool> bombCoordsUsed;
 };

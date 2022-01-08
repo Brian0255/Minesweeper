@@ -16,6 +16,7 @@ private slots:
 signals:
     void rightClicked();
     void leftClicked();
+    void middleClicked();
 public slots:
 
 };

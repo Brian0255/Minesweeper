@@ -14,7 +14,8 @@ Minesweeper::Minesweeper(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
-
+    srand(time(0));
+    bombs = bombStartAmount;
     connect(ui.ResetButton, &QPushButton::clicked, this, &Minesweeper::resetButtonClick);
 
     QGridLayout* mainGrid = ui.mainGrid;
@@ -33,10 +34,11 @@ Minesweeper::Minesweeper(QWidget* parent)
             Tile tile = Tile(true, tileBtn, TILE_TYPE::HIDDEN, 0);
             connect(tileBtn, &QRightClickButton::leftClicked, this, &Minesweeper::tileButtonClick);
             connect(tileBtn, &QRightClickButton::rightClicked, this, &Minesweeper::tileRightClick);
+            connect(tileBtn, &QRightClickButton::middleClicked, this, &Minesweeper::tileMiddleClick);
             std::array<int,2> coords = { i,j };
             tiles[i][j] = tile;
+            bombCoordsUsed.insert({ { i,j }, false });
             buttonCoords.insert({ tileBtn, coords });
-            qDebug() << buttonCoords.at(tileBtn)[0];
             mainGrid->addWidget(tileBtn, i, j);
         }
     }
@@ -78,25 +80,52 @@ Minesweeper::Minesweeper(QWidget* parent)
             while (!valid) {
                 int row = rand() % max;
                 int col = rand() % max;
-                if (row == coords[0] && col == coords[1]) {
-                    valid = false;
-                }
-                else {
-                   
-                    tiles[row][col].setTileType(TILE_TYPE::BOMB);
-                    qDebug() << (tiles[row][col].getButton());
+                if ((row != coords[0] || col != coords[1]) &&
+                    (tiles[row][col].getTileType() != TILE_TYPE::BOMB)) {
                     valid = true;
+                    tiles[row][col].setTileType(TILE_TYPE::BOMB);
                 }
             }
         }
-
+        ui.BombLabel->setText("Bombs: " + QString::number(bombs));
     }
 
-    void Minesweeper::tileRightClick()
-    {
+    void Minesweeper::tileRightClick() {
         QPushButton* button = qobject_cast<QPushButton*>(sender());
-        if (button->isEnabled()) {
+        std::array<int, 2> coords = buttonCoords.at(button);
+        Tile tile = tiles[coords[0]][coords[1]];
+        if (tile.getTileType() != TILE_TYPE::SAFE && tile.getTileType() != TILE_TYPE::BOMBS_AROUND) {
             button->setText( (button->text() == "X") ? "" : "X");
+            bombs += (button->text() == "X") ? -1 : 1;
+            tiles[coords[0]][coords[1]].flag();
+            ui.BombLabel->setText("Bombs: " + QString::number(bombs));
+        }
+    }
+
+    void Minesweeper::tileMiddleClick() {
+        QPushButton* button = qobject_cast<QPushButton*>(sender());
+        std::array<int, 2> coords = buttonCoords.at(button);
+        int row = coords[0];
+        int col = coords[1];
+        if (tiles[row][col].getTileType() == TILE_TYPE::BOMBS_AROUND) {
+            if (calcFlagsAroundTile(button) == button->text().toInt()) {
+                for (int rowOffset = -1; rowOffset < 2; ++rowOffset) {
+                    for (int colOffset = -1; colOffset < 2; ++colOffset) {
+                        if ((rowOffset != 0) || (colOffset != 0)) {
+                            int checkRow = row + rowOffset;
+                            int checkCol = col + colOffset;
+                            if (checkRow >= 0 && checkRow < tiles.size()) {
+                                if (checkCol >= 0 && checkCol < tiles.size()) {
+                                    Tile tile = tiles[checkRow][checkCol];
+                                    if (tile.isHidden() && (!tile.isFlagged())) {
+                                        calcBombsAroundTile(tiles[checkRow][checkCol].getButton());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -104,28 +133,12 @@ Minesweeper::Minesweeper(QWidget* parent)
         std::array<int, 2> coords = buttonCoords.at(button);
         int row = coords[0];
         int col = coords[1];
-        int total = 0;
-        for (int rowOffset = -1; rowOffset < 2; ++rowOffset) {
-            for (int colOffset = -1; colOffset < 2; ++colOffset) {
-                if ((rowOffset != 0) || (colOffset != 0)) { //avoid checking the square we're on
-                    int checkRow = row + rowOffset;
-                    int checkCol = col + colOffset;
-                    if (checkRow >= 0 && checkRow < tiles.size()) {
-                        if (checkCol >= 0 && checkCol < tiles.size()) {
-                            Tile tile = tiles[checkRow][checkCol];
-                            if (tile.getTileType() == TILE_TYPE::BOMB) {
-                                ++total;
-                            }
-                        }
-                    }
-                }
-            }
+        Tile mainTile = tiles[row][col];
+        if (mainTile.getTileType() == TILE_TYPE::BOMB) {
+            gameOver(button);
         }
-        qDebug() << total;
-        button->setText((total > 0) ? QString::number(total) : "");
-
-        if (total == 0) {
-            tiles[row][col].setTileType(TILE_TYPE::SAFE);
+        else {
+            int total = 0;
             for (int rowOffset = -1; rowOffset < 2; ++rowOffset) {
                 for (int colOffset = -1; colOffset < 2; ++colOffset) {
                     if ((rowOffset != 0) || (colOffset != 0)) { //avoid checking the square we're on
@@ -134,21 +147,42 @@ Minesweeper::Minesweeper(QWidget* parent)
                         if (checkRow >= 0 && checkRow < tiles.size()) {
                             if (checkCol >= 0 && checkCol < tiles.size()) {
                                 Tile tile = tiles[checkRow][checkCol];
-                                qDebug() << "tile at " << row << " " << col << " is " << tile.getTileType();
-                                if (tile.getTileType() == TILE_TYPE::HIDDEN) {
-                                    calcBombsAroundTile(tile.getButton());
+                                if (tile.getTileType() == TILE_TYPE::BOMB) {
+                                    ++total;
                                 }
                             }
                         }
                     }
                 }
             }
+            button->setText((total > 0) ? QString::number(total) : "");
+
+            if (total == 0) {
+                tiles[row][col].setTileType(TILE_TYPE::SAFE);
+                for (int rowOffset = -1; rowOffset < 2; ++rowOffset) {
+                    for (int colOffset = -1; colOffset < 2; ++colOffset) {
+                        if ((rowOffset != 0) || (colOffset != 0)) {
+                            int checkRow = row + rowOffset;
+                            int checkCol = col + colOffset;
+                            if (checkRow >= 0 && checkRow < tiles.size()) {
+                                if (checkCol >= 0 && checkCol < tiles.size()) {
+                                    Tile tile = tiles[checkRow][checkCol];
+                                    if (tile.getTileType() == TILE_TYPE::HIDDEN) {
+                                        calcBombsAroundTile(tile.getButton());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                tiles[row][col].setTileType(TILE_TYPE::BOMBS_AROUND);
+            }
+            changeColor(button, UNCOVERED_COLOR);
+            tiles[row][col].setHidden();
+            button->removeEventFilter(this);
         }
-        else {
-            tiles[row][col].setTileType(TILE_TYPE::BOMBS_AROUND);
-        }
-        changeColor(button, UNCOVERED_COLOR);
-        button->setEnabled(false);
     }
 
     void Minesweeper::resetGame(){
@@ -158,22 +192,55 @@ Minesweeper::Minesweeper(QWidget* parent)
                 changeColor(tiles[i][j].getButton(), HIDDEN_TILE_COLOR);
                 tiles[i][j].getButton()->setEnabled(true);
                 tiles[i][j].getButton()->setText("");
+                if(!tiles[i][j].isHidden()) {
+                    tiles[i][j].setHidden();
+                }
+                if (tiles[i][j].isFlagged()) {
+                    tiles[i][j].flag();
+                }
                 gameActive = false;
             }
         }
+        ui.StatusLabel->setText("");
+        bombs = bombStartAmount;
+        ui.BombLabel->setText("Bombs: " + QString::number(bombs));
     }
 
     void Minesweeper::gameOver(QPushButton* hit) {
         hit->setText("X");
         changeColor(hit, HIT_BOMB_COLOR);
+        disableButtons();
         for (std::array<Tile,16> tileRow : tiles) {
             for (Tile tile : tileRow) {
-                tile.getButton()->setEnabled(false);
                 if (tile.getTileType() == TILE_TYPE::BOMB && tile.getButton() != hit) {
                     changeColor(tile.getButton(), UNCOVERED_COLOR);
                     tile.getButton()->setText("X");
                 }
             }
+        }
+        ui.StatusLabel->setText("Game over!");
+    }
+
+    void Minesweeper::disableButtons() {
+        for (std::array<Tile, 16> tileRow : tiles) {
+            for (Tile tile : tileRow) {
+                tile.getButton()->setEnabled(false);
+            }
+        }
+    }
+
+    void Minesweeper::checkIfWin() {
+        bool win{ true };
+        for (std::array<Tile, 16> tileRow : tiles) {
+            for (Tile tile : tileRow) {
+                if (tile.getTileType() == TILE_TYPE::HIDDEN) {
+                    win = false;
+                }
+            }
+        }
+        if (win) {
+            disableButtons();
+            ui.StatusLabel->setText("You win!");
         }
     }
 
@@ -191,11 +258,10 @@ Minesweeper::Minesweeper(QWidget* parent)
         QPushButton* button = qobject_cast<QPushButton*>(sender());
         if (button->isEnabled()) {
             changeColor(button, UNCOVERED_COLOR);
-            button->setEnabled(false);
 
             if (!gameActive) {
                 gameActive = true;
-                startGame(button, 60);
+                startGame(button, bombStartAmount);
             }
             std::array<int, 2> coords = buttonCoords.at(button);
             Tile tile = tiles[ coords[0] ][ coords[1] ];
@@ -204,6 +270,32 @@ Minesweeper::Minesweeper(QWidget* parent)
             }
             else {
                 calcBombsAroundTile(button);
+                checkIfWin();
             }
         }
+    }
+
+    int Minesweeper::calcFlagsAroundTile(QPushButton* button) {
+        std::array<int, 2> coords = buttonCoords.at(button);
+        int row = coords[0];
+        int col = coords[1];
+        Tile mainTile = tiles[row][col];
+        int total = 0;
+        for (int rowOffset = -1; rowOffset < 2; ++rowOffset) {
+            for (int colOffset = -1; colOffset < 2; ++colOffset) {
+                if ((rowOffset != 0) || (colOffset != 0)) { 
+                    int checkRow = row + rowOffset;
+                    int checkCol = col + colOffset;
+                    if (checkRow >= 0 && checkRow < tiles.size()) {
+                        if (checkCol >= 0 && checkCol < tiles.size()) {
+                            Tile tile = tiles[checkRow][checkCol];
+                            if (tile.isFlagged()) {
+                                ++total;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return total;
     }

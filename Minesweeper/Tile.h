@@ -9,7 +9,12 @@ private:
 	QPushButton* button;
 	TILE_TYPE tileType;
 	int bombsAround;
+	bool flagged;
 public:
+	void flag();
+	bool isFlagged();
+	bool isHidden();
+	void setHidden();
 	void setTileType(TILE_TYPE newType);
 	TILE_TYPE getTileType();
 	QPushButton* getButton();
