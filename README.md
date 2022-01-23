@@ -1,2 +1,2 @@
 # Minesweeper
-## A simple UI version of minesweeper.
+### A simple UI version of minesweeper.
