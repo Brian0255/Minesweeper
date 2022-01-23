@@ -15,12 +15,13 @@ public:
     bool eventFilter(QObject* watched, QEvent* event);
     void changeColor(QWidget* mbutton, const QString color);
     void startGame(QPushButton*, int);
-    void calcBombsAroundTile(QPushButton* button);
+    void revealTile(QPushButton* button);
     void resetGame();
     void gameOver(QPushButton*);
     void checkIfWin();
     void disableButtons();
     int calcFlagsAroundTile(QPushButton* button);
+    void setupTileBombCounts();
 public slots:
     void tileButtonPress();
     void tileButtonClick();
