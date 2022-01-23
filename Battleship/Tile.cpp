@@ -19,7 +19,6 @@ int Tile::calculateShipsNorth(std::map<QPushButton*, std::array<int, 2>>& button
     int row = coords[0];
     int col = coords[1];
     int total{ 0 };
-    qDebug() << row - 1;
     for (int i{ row - 1 }; i >= 0; --i) {
         Tile tile = tiles[i][col];
         if (tile.isShip) {
