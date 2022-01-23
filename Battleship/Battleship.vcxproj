@@ -14,8 +14,9 @@
     <ProjectGuid>{5BB1681D-F0E7-40D7-9425-1EAB2B2B41CE}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.18362.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>Battleship with Logic</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -106,20 +107,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="QRightClickButton.cpp" />
+    <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Tile.cpp" />
-    <QtRcc Include="Minesweeper.qrc" />
-    <QtUic Include="Minesweeper.ui" />
-    <QtMoc Include="Minesweeper.h" />
-    <ClCompile Include="Minesweeper.cpp" />
+    <QtRcc Include="Battleship.qrc" />
+    <QtUic Include="Battleship.ui" />
+    <QtMoc Include="Battleship.h" />
+    <ClCompile Include="Battleship.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QRightClickButton.h" />
+    <ClInclude Include="Ship.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Minesweeper.rc" />
+    <ResourceCompile Include="Battleship.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

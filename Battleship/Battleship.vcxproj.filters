@@ -23,16 +23,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="Minesweeper.qrc">
+    <QtRcc Include="Battleship.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="Minesweeper.ui">
+    <QtUic Include="Battleship.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="Minesweeper.h">
+    <QtMoc Include="Battleship.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="Minesweeper.cpp">
+    <ClCompile Include="Battleship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,6 +41,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QRightClickButton.cpp">
@@ -54,9 +57,12 @@
     <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Ship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Minesweeper.rc">
+    <ResourceCompile Include="Battleship.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

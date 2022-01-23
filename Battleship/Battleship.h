@@ -2,38 +2,44 @@
 
 #include <QtWidgets/QMainWindow>
 #include<QPushButton>
-#include "ui_Minesweeper.h"
+#include "ui_Battleship.h"
 #include "Tile.h"
+#include"Ship.h"
 #include<array>
 
-class Minesweeper : public QMainWindow
+class Battleship : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Minesweeper(QWidget *parent = Q_NULLPTR);
+    Battleship(QWidget *parent = Q_NULLPTR);
     bool eventFilter(QObject* watched, QEvent* event);
     void changeColor(QWidget* mbutton, const QString color);
-    void startGame(QPushButton*, int);
+    void startGame();
     void revealTile(QPushButton* button);
     void resetGame();
     void gameOver(QPushButton*);
     void checkIfWin();
     void disableButtons();
-    int calcFlagsAroundTile(QPushButton* button);
-    void setupTileBombCounts();
+    void setupTileShipCounts();
 public slots:
     void tileButtonPress();
     void tileButtonClick();
-    void tileRightClick();
-    void tileMiddleClick();
     void resetButtonClick();
+    void tileRightClick();
 private:
     Ui::MinesweeperClass ui;
-    int bombs;
-    int bombStartAmount{ 30 };
-    std::array<std::array<Tile,16>,16> tiles;
+    int clicksLeft;
+    int shipsRemaining;
+    std::vector<Ship> ships;
+    std::array<int, 3> shipLengths{ 4,3,2 };
+    std::array<std::array<Tile,10>,10> tiles;
     bool gameActive{ false };
     std::map<QPushButton*, std::array<int,2>> buttonCoords;
-    std::map<std::array<int, 2>, bool> bombCoordsUsed;
+    void calculateShipsRemaining();
+    bool shipUncovered(Ship ship);
+    bool checkIfShipFits(Ship ship);
+    void createShip(std::string orientation, int size);
+    void createHorizontalShip(int size);
+    void createVerticalShip(int size);
 };
