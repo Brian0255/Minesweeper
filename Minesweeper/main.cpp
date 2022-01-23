@@ -1,10 +1,10 @@
-#include "Battleship.h"
+#include "Minesweeper.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Battleship w;
+    Minesweeper w;
     w.show();
     return a.exec();
 }

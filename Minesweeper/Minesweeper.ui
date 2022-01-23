@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>591</width>
+    <width>600</width>
     <height>711</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Battleship</string>
+   <string>Minesweeper</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(63, 63, 63);</string>
@@ -22,8 +22,8 @@
      <rect>
       <x>10</x>
       <y>70</y>
-      <width>571</width>
-      <height>571</height>
+      <width>581</width>
+      <height>581</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -41,8 +41,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>571</width>
-       <height>571</height>
+       <width>581</width>
+       <height>581</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="mainGrid">
@@ -67,9 +67,9 @@
    <widget class="QPushButton" name="ResetButton">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>210</x>
       <y>10</y>
-      <width>201</width>
+      <width>191</width>
       <height>51</height>
      </rect>
     </property>
@@ -93,12 +93,13 @@ border: 0px;</string>
      <rect>
       <x>130</x>
       <y>660</y>
-      <width>331</width>
+      <width>341</width>
       <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Segoe UI Semibold</family>
       <pointsize>14</pointsize>
       <bold>true</bold>
      </font>
@@ -113,35 +114,10 @@ border: 0px;</string>
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="ClicksLeftLabel">
+   <widget class="QLabel" name="BombLabel">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>10</y>
-      <width>181</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="ShipsLeftLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
+      <x>410</x>
       <y>10</y>
       <width>181</width>
       <height>51</height>
@@ -167,7 +143,7 @@ border: 0px;</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="Battleship.qrc"/>
+  <include location="Minesweeper.qrc"/>
  </resources>
  <connections/>
 </ui>
