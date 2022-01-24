@@ -14,6 +14,7 @@ Minesweeper::Minesweeper(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+    setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     srand(time(0));
     bombs = bombStartAmount;
     connect(ui.ResetButton, &QPushButton::clicked, this, &Minesweeper::resetButtonClick);
