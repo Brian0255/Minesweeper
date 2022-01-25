@@ -17,6 +17,7 @@ Minesweeper::Minesweeper(QWidget* parent)
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     srand(time(0));
     bombs = bombStartAmount;
+    ui.BombLabel->setText("Bombs: " + QString::number(bombs));
     connect(ui.ResetButton, &QPushButton::clicked, this, &Minesweeper::resetButtonClick);
 
     QGridLayout* mainGrid = ui.mainGrid;
@@ -170,6 +171,7 @@ Minesweeper::Minesweeper(QWidget* parent)
                 Tile* tile = &tiles[i][j];
                 tile->tileType = (TILE_TYPE::HIDDEN);
                 changeColor(tile->button, HIDDEN_TILE_COLOR);
+                tile->button->installEventFilter(this);
                 tile->button->setEnabled(true);
                 tile->button->setText("");
                 if(!tile->hidden) {
